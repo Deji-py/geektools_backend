@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 from rest_framework.response import Response
 
 from django.contrib.auth.models import Group
-from serializers import RegisterUserSerializer,changePasswordSerializer,UserProfileSerializer
+from .serializers import RegisterUserSerializer,changePasswordSerializer,UserProfileSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -47,7 +47,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data.update({'user_id': self.user.id})
         full_name = f"{self.user.first_name} {self.user.last_name}"
         data.update({'full_name': full_name})
-        data.update({'role': self.user.role})
 
         # Finally, the updated data dictionary is returned.
         return data

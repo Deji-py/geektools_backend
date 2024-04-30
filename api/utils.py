@@ -2,7 +2,7 @@ import random
 from django.core.mail import EmailMessage
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-from models import User, OneTimePassword
+from .models import User, OneTimePassword
 from django.utils import timezone
 
 def generate_otp():

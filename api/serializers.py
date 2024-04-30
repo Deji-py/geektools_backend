@@ -104,6 +104,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         instance.gender = validated_data.get('gender', instance.gender)
         instance.profile_picture = validated_data.get('profile_picture', instance.profile_picture)
         instance.country = validated_data.get('country', instance.country)
+        instance.state = validated_data.get('state', instance.state)
         instance.state = validated_data.get('state', instance.state)  # Add this line for the 'state' field
 
         # Update the 'updated_created' field to the current timestamp

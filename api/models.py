@@ -74,7 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserRole(models.Model):
-    name = models.CharField(max_length=20, blank=True, null=True, unique=True)
+    name = models.CharField(max_length=20, unique=True)
 
     def __str__(self):
         return self.name
@@ -113,4 +113,4 @@ class  OneTimePassword(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.first_name}-passcode"
+        return f"{self.user.first_name}-passcode"   
