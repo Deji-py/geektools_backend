@@ -20,6 +20,7 @@ urlpatterns = [
     path('verify_code/', views.code_verification, name='verify_code'),
     path('resend-otp/', views.resend_otp, name='resend-otp'),
     path('user_profile/<int:user_id>/', views.user_profile, name='user_profile'),
+    path('role_list/', views.user_roles, name='role_list'),
 
 
 ]

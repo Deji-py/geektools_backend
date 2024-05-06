@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 from rest_framework.response import Response
 
 from django.contrib.auth.models import Group
-from .serializers import RegisterUserSerializer,changePasswordSerializer,UserProfileSerializer
+from .serializers import RegisterUserSerializer,changePasswordSerializer,UserProfileSerializer,UserRoleSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -80,7 +80,7 @@ def changePasswordView(request):
     """
     if request.method == 'PUT':
         serializer=changePasswordSerializer(data=request.data, context={'user':request.user})
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             return Response({'detail': 'password changed successfully'}, status=status.HTTP_200_OK)
         return Response({"error": "Failed to changed password", "details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -137,6 +137,15 @@ def resend_otp(request):
 
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_roles(request):
+    role = UserRole.objects.all()
+    serializer = UserRoleSerializer(role, many=True)
+    return Response(serializer.data)
+
+
+
 
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
@@ -153,7 +162,7 @@ def user_profile(request, user_id):
 
     elif request.method == 'PUT':
         serializer = UserProfileSerializer(profile, data=request.data, partial=True)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

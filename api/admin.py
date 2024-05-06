@@ -28,7 +28,7 @@ class CustomUserAdmin(UserAdmin):
 
 
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'first_name', 'last_name', 'email', 'country', 'role', 'company', 'date_created', 'date_updated')
+    list_display = ('user', 'first_name', 'last_name', 'email', 'country', 'profile_picture', 'role', 'company', 'date_created', 'date_updated')
     search_fields = ('user__email', 'first_name', 'last_name', 'email')
     list_filter = ('role', 'date_created', 'date_updated')
 

@@ -89,27 +89,41 @@ class VerificationCodeSerializer(serializers.Serializer):
 
 
 
+
+class UserRoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRole
+        fields = ('id', 'name')
+        read_only_fields = ('id',)
+
 class UserProfileSerializer(serializers.ModelSerializer):
+    role = UserRoleSerializer()
+
     class Meta:
         model = UserProfile
-        fields = ['user', 'email', 'first_name', 'last_name', 'gender', 'profile_picture', 'country', 'state', 'date_created', 'date_updated']
-        extra_kwargs = {
-            'email': {'read_only': True},
-        }
-        read_only_fields = ['date_created', 'date_updated', 'user']
+        fields = ['user', 'first_name', 'last_name', 'email', 'gender', 'profile_picture', 'country', 'role', 'company', 'date_created', 'date_updated']
+        read_only_fields = ['date_created', 'date_updated', 'first_name', 'last_name', 'email', 'user']
 
     def update(self, instance, validated_data):
+        role_data = validated_data.pop("role", None)
+
+        if role_data:
+            role, created = UserRole.objects.get_or_create(**role_data)
+            instance.role = role
+        else:
+            instance.role = None
+
+
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.email = validated_data.get('email', instance.email)
         instance.gender = validated_data.get('gender', instance.gender)
         instance.profile_picture = validated_data.get('profile_picture', instance.profile_picture)
         instance.country = validated_data.get('country', instance.country)
-        instance.state = validated_data.get('state', instance.state)
-        instance.state = validated_data.get('state', instance.state)  # Add this line for the 'state' field
-
-        # Update the 'updated_created' field to the current timestamp
-        instance.date_updated = timezone.now()
+        instance.company = validated_data.get('company', instance.company)
 
         instance.save()
         return instance
+
+
 

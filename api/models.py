@@ -74,7 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class UserRole(models.Model):
-    name = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -95,7 +95,7 @@ class UserProfile(models.Model):
     gender = models.CharField(max_length=6, choices=GENDER_CHOICES, null=True)
     profile_picture = models.ImageField(upload_to='profile_images/', validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])])
     country = models.CharField(max_length=50, null=True)
-    role = models.OneToOneField(UserRole, on_delete=models.CASCADE)
+    role = models.ForeignKey(UserRole, on_delete=models.CASCADE,null=True, related_name='user_profiles')
     company = models.CharField(max_length=50, blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)

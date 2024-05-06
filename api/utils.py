@@ -15,7 +15,7 @@ def send_code_to_user(email):
         return "User does not exist"
 
     otp_code = generate_otp()
-    current_site = "Serbis.com"
+    current_site = "Geeks.com"
     email_subject = "One-time password for Email verification"
     email_body = f"Hi {user.first_name}, thanks for signing up on {current_site}. Please verify your email using this one-time password: {otp_code}"
 

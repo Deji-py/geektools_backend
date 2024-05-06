@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     #APPS
     'api.apps.ApiConfig',
     'social_account.apps.SocialAccountConfig',
+    'geeks_tools.apps.GeeksToolsConfig',
 
     #social auth
     'oauth2_provider',
