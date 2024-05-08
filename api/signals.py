@@ -19,7 +19,7 @@ User = get_user_model()
 @receiver(post_save, sender=User)
 def customer_Profile(sender, instance, created, *args, **kwargs):
     if created:
-        group, created = Group.objects.get_or_create(name='Customer') 
+        group, created = Group.objects.get_or_create(name='Free') 
         instance.groups.add(group)
 
        

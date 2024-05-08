@@ -102,6 +102,40 @@ class Subscription(models.Model):
     def __str__(self):
         return self.email
     
+
+
+
+
+STATUS = (
+    ('Draft', 'Draft'),
+    ('Publish', 'Publish')
+)
+
+class Post(models.Model):
+    title = models.CharField(max_length=200, unique=True)
+    content = models.TextField()
+    status = models.CharField(max_length=20, choices=STATUS, default='Draft')
+    image = models.ImageField(null=True, blank=True)
+    likes = models.IntegerField(default=0)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_on']
+    
+
+    def save(self, *args, **kwargs):
+        # Custom logic to set default values
+        if not self.status:
+            self.status = 'Draft'
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.title
+    
+
+
+    
     
 
 

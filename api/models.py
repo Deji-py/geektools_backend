@@ -96,6 +96,7 @@ class UserProfile(models.Model):
     profile_picture = models.ImageField(upload_to='profile_images/', validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])])
     country = models.CharField(max_length=50, null=True)
     role = models.ForeignKey(UserRole, on_delete=models.CASCADE,null=True, related_name='user_profiles')
+    groups = models.ManyToManyField(Group, blank=True)
     company = models.CharField(max_length=50, blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
@@ -113,4 +114,4 @@ class  OneTimePassword(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.first_name}-passcode"   
+        return f"{self.user.first_name}-passcode"

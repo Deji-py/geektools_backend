@@ -10,7 +10,7 @@ User = get_user_model()
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('id', 'name', 'images')
+        fields = ('id', 'name', 'image')
         read_only_field = ('id')
 
 
@@ -26,7 +26,17 @@ class HashtagSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Hashtag name must start with '#'")
         return attr
     
+    def create(self, validated_data):
+        return Hashtag.objects.create(**validated_data)
     
+
+    def update(self, instance, validated_data):
+        instance.name=validated_data.get('name', instance.name)
+        instance.save()
+        return instance
+    
+    
+
 
 
 class UserToolSerializer(serializers.ModelSerializer):
@@ -157,10 +167,28 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Subscription.objects.create( **validated_data)
+    
 
 
 
 
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id', 'title',  'content', 'status', 'image', 'likes', 'created_on', 'updated_on']
+        read_only_fields = ['id','created_on', 'updated_on'] 
+
+    def create(self, validated_data):
+        return Post.objects.create( **validated_data)
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.content = validated_data.get('content', instance.content)
+        instance.status = validated_data.get('status', instance.status)
+        instance.image = validated_data.get('image', instance.image)
+        instance.likes = validated_data.get('likes', instance.likes)
+        instance.save()
+        return instance
 
 
     

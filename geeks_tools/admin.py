@@ -1,12 +1,12 @@
 from django.contrib import admin
-from geeks_tools.models import Category, Hashtag, User_tool, SetUp, SocialLinks, ToolInfo, Subscription
+from geeks_tools.models import Category, Hashtag, User_tool, SetUp, SocialLinks, ToolInfo, Subscription,Post
 from .models import User
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    list_display = ['name', 'image']
     search_fields = ['name']
 
 
@@ -59,3 +59,12 @@ class SubscriptionAdmin(admin.ModelAdmin):
     search_fields = ['email']
 
 admin.site.register(Subscription, SubscriptionAdmin)
+
+
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    list_display = ('title', 'status','likes', 'created_on', 'updated_on')
+    list_filter = ('status', 'created_on', 'updated_on')
+    search_fields = ('title', 'content')
+    
+

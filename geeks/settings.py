@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'social_account.apps.SocialAccountConfig',
     'geeks_tools.apps.GeeksToolsConfig',
 
+    'django_ckeditor_5',
+
     #social auth
     'oauth2_provider',
     'social_django',
