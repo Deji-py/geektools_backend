@@ -6,21 +6,21 @@ User = get_user_model()
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'image']
+    list_display = ['id','name', 'image']
     search_fields = ['name']
 
 
 
 @admin.register(Hashtag)
 class HashtagAdmin(admin.ModelAdmin):
-    list_display = ['name']
+    list_display = ['id','name']
     search_fields = ['name']
 
 
 
 @admin.register(User_tool)
 class UserToolAdmin(admin.ModelAdmin):
-    list_display = ['user', 'name', 'intro', 'pricing']
+    list_display = ['user', 'name', 'intro', 'pricing', 'logo', 'url', 'created_at']
     search_fields = ['name']
     list_filter = ['pricing']
 

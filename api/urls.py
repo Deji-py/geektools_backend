@@ -1,7 +1,8 @@
 from django.urls import path
-from . import views
+from . import views_main
+from . import views_admin
 from django_rest_passwordreset.views import reset_password_request_token, reset_password_confirm
-from .views import MyTokenObtainPairView
+from .views_main import MyTokenObtainPairView
 
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -15,12 +16,15 @@ urlpatterns = [
     path('api/password_reset/confirm/', reset_password_confirm, name='reset_password_confirm'),
 
 
-    path('register/', views.registerUsers, name='register'),
-    path('change-password/', views.changePasswordView, name='change-password'),
-    path('verify_code/', views.code_verification, name='verify_code'),
-    path('resend-otp/', views.resend_otp, name='resend-otp'),
-    path('user_profile/<int:user_id>/', views.user_profile, name='user_profile'),
-    path('role_list/', views.user_roles, name='role_list'),
+    path('register/', views_main.registerUsers, name='register'),
+    path('change-password/', views_main.changePasswordView, name='change-password'),
+    path('verify_code/', views_main.code_verification, name='verify_code'),
+    path('resend-otp/', views_main.resend_otp, name='resend-otp'),
+    path('user_profile/<int:user_id>/', views_main.user_profile, name='user_profile'),
+    path('role_list/', views_main.user_roles, name='role_list'),
 
+
+    path('user-list/', views_admin.user_list, name='user-list'),
+    path('user/<int:user_id>/', views_admin.User_admin, name='user-admin'),
 
 ]

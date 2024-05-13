@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views_main
 from . import views_admin
+from .views_main import UserToolList,UserPostList
 
 
 urlpatterns = [
@@ -14,5 +15,6 @@ urlpatterns = [
     path('blog-post/', views_main.blog_post, name='blog-post'),
     path('create-post/', views_admin.create_post, name='create-post'),
     path('post-details/<int:pk>/', views_admin.update_post, name='post-details'),
-
+    path('user-tool-list/', UserToolList.as_view(), name='user-tool-list'),
+    path('post-list/', UserPostList.as_view(), name='post-list'),
 ]

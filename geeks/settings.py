@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'social_account.apps.SocialAccountConfig',
     'geeks_tools.apps.GeeksToolsConfig',
 
-    'django_ckeditor_5',
+    'django_filters',
 
     #social auth
     'oauth2_provider',
@@ -80,6 +80,7 @@ REST_FRAMEWORK = {
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
         'drf_social_oauth2.authentication.SocialAuthentication',
     )
+    
 
 }
 

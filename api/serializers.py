@@ -6,8 +6,24 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser', 'is_verified', 'created_at', 'updated_at', 'auth_provider')
+        read_only_fields =('id', 'is_verified', 'created_at', 'updated_at', 'auth_provider')
 
-# Serializer for user registration
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value) 
+        instance.save()
+        return instance
+
+
+
+
+
+
 class RegisterUserSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
 

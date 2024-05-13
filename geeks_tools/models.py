@@ -14,7 +14,7 @@ class Category(models.Model):
 
 
 class Hashtag(models.Model):
-    name = models.CharField(max_length=30, blank=True, null=True)
+    name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
@@ -28,13 +28,13 @@ PRICING_CHOICES = (
 )
 
 class User_tool(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=100)
     logo = models.ImageField(upload_to='logos/', validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])], blank=True, null=True)
     url = models.URLField()
     intro = models.CharField(max_length=70)
     hashtag = models.ManyToManyField(Hashtag, related_name='user_tools')
-    category = models.ManyToManyField(Category, related_name='user_tools')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='user_tools')
     pricing = models.CharField(max_length=10, choices=PRICING_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -102,6 +102,7 @@ class Subscription(models.Model):
     def __str__(self):
         return self.email
     
+
 
 
 

@@ -1,13 +1,15 @@
 from django.shortcuts import render
 from rest_framework import status
+from rest_framework import generics
 from rest_framework.decorators import api_view,permission_classes,parser_classes
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny,IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from django.contrib.auth.models import Group
-from geeks_tools.serializers import CategorySerializer,HashtagSerializer,UserToolSerializer,SetUpSerializer,ToolInfoSerializer,SubscriptionSerializer,PostSerializer
+from geeks_tools.serializers import HashtagSerializer,UserToolSerializer,SetUpSerializer,ToolInfoSerializer,SubscriptionSerializer,PostSerializer,CategoryListSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
+from django_filters.rest_framework import DjangoFilterBackend
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -17,10 +19,10 @@ from geeks_tools.models import *
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def categoriesList(request):
     categories = Category.objects.all()
-    serializer = CategorySerializer(categories, many=True)
+    serializer = CategoryListSerializer(categories, many=True)
     return Response(serializer.data)
 
 
@@ -40,11 +42,16 @@ def createHashtag(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-@api_view(['POST'])
+@api_view(['GET','POST'])
 @permission_classes([IsAuthenticated])
 @parser_classes([FormParser, MultiPartParser])
 def user_tool_creation(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
+        tool = User_tool.objects.all()
+        serializer = UserToolSerializer(tool, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
         serializer = UserToolSerializer(data=request.data, context={'request':request})
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -110,6 +117,20 @@ def blog_post(request):
 
 
 
+
+class UserToolList(generics.ListAPIView):
+    queryset = User_tool.objects.all()
+    serializer_class = UserToolSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['name','intro','hashtag','pricing','category']
+
+
+
+class UserPostList(generics.ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['title']
 
 
 

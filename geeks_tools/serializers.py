@@ -7,68 +7,75 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+from rest_framework import serializers
+
+
+class CategoryListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('id', 'name','image')
+        read_only_fields = ('id',)
+
+
+
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('id', 'name', 'image')
-        read_only_field = ('id')
+        fields = ('id', 'name')
+        read_only_fields = ('id',)
 
 
 class HashtagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hashtag
         fields = ('id', 'name')
-        read_only_field = ('id')
+        read_only_fields = ('id',)
 
-    def validate(self,attr):
+    def validate(self, attr):
         name = attr.get('name')
-        if not name.startswith('#'):
+        if name is not None and not name.startswith('#'):
             raise serializers.ValidationError("Hashtag name must start with '#'")
         return attr
-    
+
     def create(self, validated_data):
+        print("Data passed to HashtagSerializer create method:", validated_data)
         return Hashtag.objects.create(**validated_data)
-    
 
     def update(self, instance, validated_data):
-        instance.name=validated_data.get('name', instance.name)
+        instance.name = validated_data.get('name', instance.name)
         instance.save()
         return instance
-    
-    
 
 
 
 class UserToolSerializer(serializers.ModelSerializer):
-    categories = CategorySerializer(many=True)
+    category = CategorySerializer()
     hashtags = HashtagSerializer(many=True)
 
     class Meta:
         model = User_tool
-        fields =('id','user','name', 'logo','url','intro','pricing','created_at', 'categories', 'hashtags')
-        read_only_fields=('id','user')
+        fields = ('id', 'user', 'name', 'logo', 'url', 'intro', 'pricing', 'category', 'hashtags', 'created_at')
+        read_only_fields = ('id', 'user')
 
-
-    # Create the User_tool instance
     def create(self, validated_data):
         user = self.context['request'].user
-        category_names = validated_data.pop('categories', [])
-        hashtag_data = validated_data.pop('services', [])
 
-        user_tool = User_tool.objects.create(user=user, **validated_data)
-        
-        # Create categories and add them to the User_tool instance
-        for category_name in category_names:
-            category, created = Category.objects.get_or_create(**category_name)
-            user_tool.categories.add(category)
+        category_data = validated_data.pop('category')
+        category, created = Category.objects.get_or_create(**category_data)
 
+        hashtags_data = validated_data.pop('hashtags', [])
 
-         # Create hashtags and add them to the User_tool instance
-        for hashtag_item in hashtag_data:
-            hashtag, created = Hashtag.objects.get_or_create(**hashtag_item)
-            user_tool.hashtags.add(hashtag)
+        user_tool = User_tool.objects.create(user=user, category=category, **validated_data)
+
+        for hashtag_data in hashtags_data:
+            hashtag, created = Hashtag.objects.get_or_create(user_tools=user_tool, **hashtag_data)
 
         return user_tool
+
+
+
+
 
 
 
