@@ -4,20 +4,41 @@ from django.core.validators import FileExtensionValidator
 
 User = get_user_model()
 
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='category_images/', validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])])
+    
+    class Meta:
+        ordering = ['id','name']
+    
+    def __str__(self):
+        return self.name
+
+
+
+class Subcategory(models.Model):
+    name = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return self.name
+    
 
 
 
 class Hashtag(models.Model):
-    name = models.CharField(max_length=100)
+    term = models.CharField(max_length=100)
+    subcategories = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['term']
 
     def __str__(self):
-        return self.name
+        return self.term
+
     
     
 

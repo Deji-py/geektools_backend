@@ -1,20 +1,25 @@
 from django.contrib import admin
-from geeks_tools.models import Category, Hashtag, User_tool, SetUp, SocialLinks, ToolInfo, Subscription,Post
+from geeks_tools.models import Category, Hashtag, User_tool, SetUp, SocialLinks, ToolInfo, Subscription,Post,Subcategory
 from .models import User
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['id','name', 'image']
-    search_fields = ['name']
+    list_display = ('id','name',)
+    search_fields = ('name',)
 
-
+@admin.register(Subcategory)
+class SubcategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category')
+    list_filter = ('category',)
+    search_fields = ('name',)
 
 @admin.register(Hashtag)
 class HashtagAdmin(admin.ModelAdmin):
-    list_display = ['id','name']
-    search_fields = ['name']
+    list_display = ('term',)
+    search_fields = ('term',)
+
 
 
 

@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view,permission_classes,parser_classes
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 from rest_framework.response import Response
+from .permissions import IsVerified 
 
 from django.contrib.auth.models import Group
 from .serializers import RegisterUserSerializer,changePasswordSerializer,UserProfileSerializer,UserRoleSerializer
@@ -33,6 +34,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['first_name'] = user.first_name
         token['last_name'] = user.last_name
         token['email'] = user.email
+        token['is_verified'] = user.is_verified
         
 
         return token
@@ -47,6 +49,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data.update({'user_id': self.user.id})
         full_name = f"{self.user.first_name} {self.user.last_name}"
         data.update({'full_name': full_name})
+        data.update({'is_verified': self.user.is_verified})
 
         # Finally, the updated data dictionary is returned.
         return data
@@ -148,7 +151,7 @@ def user_roles(request):
 
 
 @api_view(['GET', 'PUT'])
-@permission_classes([IsAuthenticated])
+@permission_classes([ IsAuthenticated & IsVerified ])
 @parser_classes([FormParser, MultiPartParser])
 def user_profile(request, user_id):
     try:

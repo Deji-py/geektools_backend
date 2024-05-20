@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny,IsAu
 from rest_framework.response import Response
 
 from django.contrib.auth.models import Group
-from geeks_tools.serializers import CategorySerializer,HashtagSerializer,UserToolSerializer,SetUpSerializer,ToolInfoSerializer,SubscriptionSerializer,PostSerializer
+from geeks_tools.serializers import SubcategorySerializer,PostSerializer,HashtagSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -15,7 +15,88 @@ from geeks_tools.models import *
 
 
 
+
 #ADMINISTRATION USERS VIEW
+@api_view(['GET','POST'])
+@permission_classes([IsAdminUser])
+def sub_category_view(request):
+    if request.method == 'GET':
+        sub_category=Subcategory.objects.all()
+        serializer = SubcategorySerializer(sub_category, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = SubcategorySerializer(data=request.data, context={'request':request})
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({'message': 'sub category created successfully'}, status=status.HTTP_201_CREATED)
+    return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+
+@api_view(['PUT', 'DELETE'])
+@permission_classes([IsAdminUser])
+def update_subcategory_view(request, pk):
+    try:
+        sub_category = Subcategory.objects.get(id=pk)
+    except Subcategory.DoesNotExist:
+        return Response({'error': 'Subcategory not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'PUT':
+        serializer = SubcategorySerializer(sub_category, data=request.data, partial=True) 
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Subcategory updated successfully'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        sub_category.delete()
+        return Response({'message': 'Subcategory deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+@api_view(['GET','POST'])
+@permission_classes([IsAdminUser])
+def hashtag_view(request):
+    if request.method == 'GET':
+        hash_tag=Hashtag.objects.all()
+        serializer = HashtagSerializer(hash_tag, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = HashtagSerializer(data=request.data, context={'request':request})
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({'message': 'hashtag created successfully'}, status=status.HTTP_201_CREATED)
+    return Response({'error': 'Method not allowed'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+
+@api_view(['PUT', 'DELETE'])
+@permission_classes([IsAdminUser])
+def update_hashtag_view(request, pk):
+    try:
+        hashtag = Hashtag.objects.get(pk=pk)
+    except Hashtag.DoesNotExist:
+        return Response({'error': 'Hashtag not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'PUT':
+        serializer = HashtagSerializer(hashtag, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Hashtag updated successfully'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        hashtag.delete()
+        return Response({'message': 'Hashtag deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
+
+
 
 
 

@@ -5,6 +5,8 @@ from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.conf import settings
+from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from .models import *
 from django_rest_passwordreset.signals import reset_password_token_created
 from django.contrib.auth import get_user_model
@@ -42,6 +44,8 @@ def update_Profile(sender, instance, created, *args, **kwargs):
         else:
             profile.save()
             print('Profile updated!!!')
+
+
 
 
 

@@ -13,44 +13,102 @@ from rest_framework import serializers
 class CategoryListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('id', 'name','image')
+        fields = ('id', 'name')
         read_only_fields = ('id',)
 
 
+class SubcategorySerializer(serializers.ModelSerializer):
+    category = CategoryListSerializer()
 
-
-class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
-        fields = ('id', 'name')
+        model = Subcategory
+        fields = ('id', 'name', 'category')
+        read_only_fields = ('id',)
+
+    def create(self, validated_data):
+        category_data = validated_data.pop('category')
+        category_name = category_data.get('name')
+        category, created = Category.objects.get_or_create(name=category_name)
+        sub_category = Subcategory.objects.create(category=category, **validated_data)
+        return sub_category
+
+    
+    def update(self, instance, validated_data):
+        category_data = validated_data.pop('category')
+        category_name = category_data.get('name')
+        category, created = Category.objects.get_or_create(name=category_name)
+
+        instance.category = category
+
+        instance.name = instance.name = validated_data.get('name', instance.name)
+
+        instance.save()
+        return instance
+    
+
+
+
+
+class SubcategorylistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subcategory
+        fields = ('id', 'name') 
         read_only_fields = ('id',)
 
 
 class HashtagSerializer(serializers.ModelSerializer):
+    subcategories = SubcategorylistSerializer()
+
     class Meta:
         model = Hashtag
-        fields = ('id', 'name')
+        fields = ('id', 'term', 'subcategories')
         read_only_fields = ('id',)
 
-    def validate(self, attr):
-        name = attr.get('name')
-        if name is not None and not name.startswith('#'):
-            raise serializers.ValidationError("Hashtag name must start with '#'")
-        return attr
-
+    def validate(self, attrs):
+        term = attrs.get('term')
+        if term is not None and not term.startswith('#'):
+            raise serializers.ValidationError("Hashtag term must start with '#'")
+        return attrs
+    
     def create(self, validated_data):
-        print("Data passed to HashtagSerializer create method:", validated_data)
-        return Hashtag.objects.create(**validated_data)
+        subcategories_data = validated_data.pop('subcategories')
+        subcategory_name = subcategories_data.get('name')
+
+        subcategory, created = Subcategory.objects.get_or_create(name=subcategory_name)
+        hashtag = Hashtag.objects.create(subcategories=subcategory, **validated_data)
+        
+        return hashtag
+    
 
     def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
+        subcategories_data = validated_data.pop('subcategories')
+        subcategory_name = subcategories_data.get('name')
+
+        subcategory, created = Subcategory.objects.get_or_create(name=subcategory_name)
+        instance.subcategories = subcategory
+
+        instance.term = validated_data.get('term', instance.term)
+
         instance.save()
         return instance
 
 
 
+
+
+
+        
+
+
+
+
+
+
+
+
+
 class UserToolSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
+    # category = CategorySerializer()
     hashtags = HashtagSerializer(many=True)
 
     class Meta:
