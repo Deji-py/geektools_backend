@@ -51,14 +51,14 @@ PRICING_CHOICES = (
 class User_tool(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=100)
-    logo = models.ImageField(upload_to='logos/', validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])], blank=True, null=True)
-    url = models.URLField()
+    # logo = models.ImageField(upload_to='logos/', validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])], blank=True, null=True)
+    url = models.URLField(unique=True)
     intro = models.CharField(max_length=70)
-    hashtag = models.ManyToManyField(Hashtag, related_name='user_tools')
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='user_tools')
+    subcategory = models.ForeignKey(Subcategory, on_delete=models.CASCADE)
+    hashtag = models.ManyToManyField(Hashtag, related_name='user_tools')
     pricing = models.CharField(max_length=10, choices=PRICING_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
-
 
     class Meta:
         ordering = ['-created_at']
@@ -154,6 +154,20 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+    
+
+
+class Bookmark(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookmarks')
+    user_tool = models.ForeignKey('User_tool', on_delete=models.CASCADE, related_name='bookmarked_by')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ['user', 'user_tool']
+
+    def __str__(self):
+        return f"Bookmark by {self.user} on {self.user_tool.name}"
     
 
 
