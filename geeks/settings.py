@@ -38,6 +38,10 @@ INSTALLED_APPS = [
     #APPS
     'api.apps.ApiConfig',
     'social_account.apps.SocialAccountConfig',
+    'geeks_tools.apps.GeeksToolsConfig',
+
+    'django_filters',
+    'drf_spectacular',
 
     #social auth
     'oauth2_provider',
@@ -76,8 +80,19 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
         'drf_social_oauth2.authentication.SocialAuthentication',
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    
 
+}
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Geeks RestFul API',
+    'DESCRIPTION': 'Geeks restful api is fully documented by Meeky',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
 }
 
 

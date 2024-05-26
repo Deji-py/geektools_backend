@@ -6,7 +6,7 @@ from .models import *
 
 class CustomUserAdmin(UserAdmin):
     model = User
-    list_display = ['id', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser', 'is_verified','auth_provider']
+    list_display = ['id', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser', 'is_verified', 'get_groups_display','auth_provider']
     search_fields = ['id', 'email', 'first_name', 'last_name']
     list_filter = ['is_active', 'is_staff', 'is_superuser', 'created_at', 'updated_at']
     fieldsets = (
@@ -23,12 +23,17 @@ class CustomUserAdmin(UserAdmin):
     )
     ordering = ('email',)
 
+    def get_groups_display(self, obj):
+        return ", ".join([group.name for group in obj.groups.all()])
+
+    get_groups_display.short_description = 'Groups'
+
 
 
 
 
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'first_name', 'last_name', 'email', 'country', 'role', 'company', 'date_created', 'date_updated')
+    list_display = ('user', 'first_name', 'last_name', 'email', 'country', 'profile_picture', 'role', 'company', 'date_created', 'date_updated')
     search_fields = ('user__email', 'first_name', 'last_name', 'email')
     list_filter = ('role', 'date_created', 'date_updated')
 

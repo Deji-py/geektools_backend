@@ -5,6 +5,8 @@ from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.conf import settings
+from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from .models import *
 from django_rest_passwordreset.signals import reset_password_token_created
 from django.contrib.auth import get_user_model
@@ -19,26 +21,31 @@ User = get_user_model()
 @receiver(post_save, sender=User)
 def customer_Profile(sender, instance, created, *args, **kwargs):
     if created:
-        group = Group.objects.get(name='Customer')
+        group, created = Group.objects.get_or_create(name='Free') 
         instance.groups.add(group)
 
+       
         UserProfile.objects.create(
             user=instance,
             first_name=instance.first_name,
             last_name=instance.last_name,
-            email=instance.email,
+            email=instance.email
         )
         print('User Profile created for', instance.first_name)
+
+        
 
 @receiver(post_save, sender=User)
 def update_Profile(sender, instance, created, *args, **kwargs):
     if not created:
-        try:
-            instance.userprofile.save()
+        profile, created = UserProfile.objects.get_or_create(user=instance)
+        if created:
+            print('User Profile was missing and has been created for existing user')
+        else:
+            profile.save()
             print('Profile updated!!!')
-        except UserProfile.DoesNotExist:
-            UserProfile.objects.create(user=instance)
-            print('User Profile created for existing')
+
+
 
 
 

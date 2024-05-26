@@ -3,9 +3,10 @@ from rest_framework import status
 from rest_framework.decorators import api_view,permission_classes,parser_classes
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
 from rest_framework.response import Response
+from .permissions import IsVerified 
 
 from django.contrib.auth.models import Group
-from .serializers import RegisterUserSerializer,changePasswordSerializer,UserProfileSerializer
+from .serializers import RegisterUserSerializer,changePasswordSerializer,UserProfileSerializer,UserRoleSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -33,6 +34,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['first_name'] = user.first_name
         token['last_name'] = user.last_name
         token['email'] = user.email
+        token['is_verified'] = user.is_verified
         
 
         return token
@@ -47,6 +49,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data.update({'user_id': self.user.id})
         full_name = f"{self.user.first_name} {self.user.last_name}"
         data.update({'full_name': full_name})
+        data.update({'is_verified': self.user.is_verified})
 
         # Finally, the updated data dictionary is returned.
         return data
@@ -80,7 +83,7 @@ def changePasswordView(request):
     """
     if request.method == 'PUT':
         serializer=changePasswordSerializer(data=request.data, context={'user':request.user})
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             return Response({'detail': 'password changed successfully'}, status=status.HTTP_200_OK)
         return Response({"error": "Failed to changed password", "details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -137,9 +140,18 @@ def resend_otp(request):
 
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_roles(request):
+    role = UserRole.objects.all()
+    serializer = UserRoleSerializer(role, many=True)
+    return Response(serializer.data)
+
+
+
 
 @api_view(['GET', 'PUT'])
-@permission_classes([IsAuthenticated])
+@permission_classes([ IsAuthenticated & IsVerified ])
 @parser_classes([FormParser, MultiPartParser])
 def user_profile(request, user_id):
     try:
@@ -153,7 +165,7 @@ def user_profile(request, user_id):
 
     elif request.method == 'PUT':
         serializer = UserProfileSerializer(profile, data=request.data, partial=True)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
